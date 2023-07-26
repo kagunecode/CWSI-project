@@ -13,6 +13,9 @@
 *.userosscache
 *.sln.docstates
 
+# Bash files and commands
+*.sh
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
