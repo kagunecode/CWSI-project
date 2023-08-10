@@ -13,6 +13,7 @@ from olympe.messages.camera import (
 )
 from olympe.media import download_media, indexing_state
 from olympe.enums.camera import model
+from olympe.messages.thermal import set_mode
 from logging import getLogger
 import keyboard
 import requests
@@ -33,17 +34,17 @@ olympe.log.update_config({
 
 logger = getLogger("photo_example")
 
-#DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1")
-DRONE_IP = os.environ.get("DRONE_IP", "192.168.42.1") # 42 wifi, 53 control
+# NOTE: IP Can differ if connected with drone WIFI, SkyControl or Sim.
+# DRONE_IP = os.environ.get("DRONE_IP", "10.202.0.1") # For simulated drone.
+DRONE_IP = os.environ.get("DRONE_IP", "192.168.42.1") # 42 wifi, 53 control.
 DRONE_MEDIA_PORT = os.environ.get("DRONE_MEDIA_PORT", "80")
-
 XMP_TAGS_OF_INTEREST = (
     "CameraRollDegree",
     "CameraPitchDegree",
     "CameraYawDegree",
     "CaptureTsUs",
     # NOTE: GPS metadata is only present if the drone has a GPS fix
-    # (i.e. they won't be present indoor)
+    # (i.e. they won't be present indoor).
     "GPSLatitude",
     "GPSLongitude",
     "GPSAltitude",
@@ -54,7 +55,7 @@ def drone_connect():
     print("\n" * 5)
     print("CONNECTING TO THE DRONE, PLEASE WAIT")
     print("\n" * 5)
-    drone = olympe.Drone(DRONE_IP, media_port=DRONE_MEDIA_PORT)
+    drone = olympe.Drone(DRONE_IP, media_port=DRONE_MEDIA_PORT) # Media port needed to connect to the drone server.
     drone.connect(timeout=10, retry=5)
     key_test(drone)
 
@@ -149,6 +150,9 @@ def test_real_drone(drone):
 
 
 def setup_photo_burst_mode(drone):
+    drone(set_mode(mode="standard")) # command message olympe.messages.thermal.set_mode(mode, _timeout=10, _no_expect=False, _float_tol=(1e-07, 1e-09))
+    # Thermal modes standard, disabled, blended. Should disable camera? cam_id 1 apparently is for video only.
+    # No Thermal support for streaming video.
     drone(set_camera_mode(cam_id=0, value="photo")).wait()
     assert drone(
         set_photo_mode(
