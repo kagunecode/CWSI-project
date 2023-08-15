@@ -12,6 +12,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+test.py
 
 # Bash files and commands
 *.sh

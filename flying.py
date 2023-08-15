@@ -10,10 +10,11 @@ from olympe.messages.camera import (
     take_photo,
     photo_progress,
     camera_capabilities,
+    set_white_balance
 )
 from olympe.media import download_media, indexing_state
 from olympe.enums.camera import model
-from olympe.messages.thermal import set_mode
+from olympe.messages.thermal import set_mode, set_rendering, set_palette_settings, set_sensitivity, set_palette_part, set_emissivity, set_background_temperature
 from logging import getLogger
 import keyboard
 import requests
@@ -56,7 +57,7 @@ def drone_connect():
     print("CONNECTING TO THE DRONE, PLEASE WAIT")
     print("\n" * 5)
     drone = olympe.Drone(DRONE_IP, media_port=DRONE_MEDIA_PORT) # Media port needed to connect to the drone server.
-    drone.connect(timeout=10, retry=5)
+    drone.connect(timeout=5, retry=3)
     key_test(drone)
 
 
@@ -66,7 +67,6 @@ def key_test(drone):
     print("USE THE ARROWS TO MOVE")
     print("PRESS 'T' TO TAKEOFF")
     print("PRESS 'L' TO LAND")
-    print("PRESS 'C' TO TAKE PHOTO")
     print("PRESS R FOR REAL DRONE PHOTO")
     print("PRESS J FOR AVAILABLE CAMERAS")
     print("\n" * 5)
@@ -88,8 +88,6 @@ def key_test(drone):
         drone(moveBy(0, -1, 0, 0)))
         keyboard.on_press_key('space', lambda _:
         drone(CancelMoveBy()))
-        keyboard.on_press_key('c', lambda _:
-        test_photo(drone))
         keyboard.on_press_key('r', lambda _:
         take_real_photo(drone))
         keyboard.on_press_key('esc', lambda _:
@@ -109,7 +107,7 @@ def take_real_photo(drone):
 
 def test_real_drone(drone):
     photo_saved = drone(photo_progress(result="photo_saved", _policy="wait"))
-    drone(take_photo(cam_id=0)).wait()
+    drone(take_photo(cam_id=1)).wait()
     if not photo_saved.wait(_timeout=30).success():
         assert False, "take_photo timedout"
     photo_progress_info = photo_saved.received_events().last().args
@@ -146,56 +144,28 @@ def test_real_drone(drone):
                     logger.info(f"{resource.resource_id} {xmp_tag} {xmp_value}")
     logger.info(f"{resource_count} media resource downloaded")
     assert resource_count == 14, f"resource count == {resource_count} != 14"
-    assert media_download.wait(1.).success(), "Photo burst media download"
-
 
 def setup_photo_burst_mode(drone):
     drone(set_mode(mode="standard")) # command message olympe.messages.thermal.set_mode(mode, _timeout=10, _no_expect=False, _float_tol=(1e-07, 1e-09))
     # Thermal modes standard, disabled, blended. Should disable camera? cam_id 1 apparently is for video only.
     # No Thermal support for streaming video.
-    drone(set_camera_mode(cam_id=0, value="photo")).wait()
-    assert drone(
+    drone(set_rendering(mode="thermal", blending_rate=0))
+    drone(set_palette_settings(mode="absolute", lowest_temp=300, highest_temp=314, outside_colorization="limited", 
+                               relative_range="locked", spot_type="hot", spot_threshold=290))
+    drone(set_sensitivity(range="low")) 
+    drone(set_emissivity(emissivity=1))
+    drone(set_camera_mode(cam_id=1, value="photo")).wait()
+    drone(
         set_photo_mode(
-            cam_id=0,
-            mode="burst",
+            cam_id=1,
+            mode="single",
             format="rectilinear",
-            file_format="jpeg",
+            file_format="dng_jpeg",
             burst="burst_14_over_1s",
             bracketing="preset_1ev",
             capture_interval=0.0,
         )
     ).wait().success()
-
-
-def test_photo(drone):
-    print("\n" * 5)
-    print("PREPARING FOR PHOTO MODE, PLEASE WAIT")
-    print("\n" * 5)
-    drone(
-        Configure(camera_id=0,
-                  config=dict(
-                      camera_mode='photo',
-                      photo_mode='single',
-                      photo_format='full_frame',
-                      photo_file_format='jpeg',
-                      photo_dynamic_range='standard',
-                      exposure_mode='automatic',
-                      white_balance_mode='automatic',
-                      ev_compensation='0_00',
-                  )) >> StartPhoto(camera_id=0) >> Photo(
-            camera_id=0,
-            type='taking_photo',
-        ) >> Photo(
-            camera_id=0,
-            type='stop',
-            stop_reason='capture_done',
-        )).wait()
-    print("\n" * 5)
-    print('PHOTO TAKEN')
-    print("\n" * 5)
-    drone.disconnect()
-    time.sleep(3)
-    drone_connect()
 
 
 if __name__ == '__main__':
