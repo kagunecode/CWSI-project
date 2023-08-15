@@ -13,6 +13,7 @@
 *.userosscache
 *.sln.docstates
 test.py
+tiffread.py
 
 # Bash files and commands
 *.sh
