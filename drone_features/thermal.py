@@ -12,6 +12,7 @@ from olympe.messages.camera2.Event import Photo
 from olympe.messages.camera import (
     set_camera_mode,
     set_photo_mode,
+    set_streaming_mode,
     take_photo,
     photo_progress
 )
@@ -48,7 +49,7 @@ class OlympeThermal():
         ).wait(_timeout=60).success()
         self.setup_photo_mode()
         self.real_drone()
-        print("\n\n\n\n\n\n\n\n\n\n PHOTO \n\n\n\n\n\n\n\n\n\n\n\n\n")
+        self.drone(set_mode(mode="disabled"))
         self.drone.disconnect()
 
     def real_drone(self):

@@ -1,10 +1,9 @@
-from drone_features.thermal import OlympeThermal
-from drone_features.streaming import OlympeStreaming
 from drone_features.rstp_streaming import OlympeRstp
+from drone_features.thermal import OlympeThermal
+from drone_features.connect import connect_drone
 
-drone = OlympeThermal()
-drone.take_real_photo()
-print("PHOTO TAKEN")
+thermal = OlympeThermal()
+thermal.take_real_photo()
 
-drone = OlympeRstp()
-drone.live_video()
+live = OlympeRstp()
+live.live_video()
