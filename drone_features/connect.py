@@ -5,5 +5,5 @@ DRONE_MEDIA_PORT = "80"     # Change this if needed
 
 def connect_drone():
     drone = olympe.Drone(DRONE_IP, media_port=DRONE_MEDIA_PORT)
-    drone.connect(timeout=10, retry=3)
+    drone.connect(timeout=8, retry=5)
     return drone
