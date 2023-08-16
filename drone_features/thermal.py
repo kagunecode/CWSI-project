@@ -2,7 +2,7 @@ import olympe
 import tempfile
 import re
 import xml.etree.ElementTree as ET
-from connect import connect_drone
+from .connect import connect_drone
 from logging import getLogger
 from olympe.media import (
     indexing_state,
@@ -48,6 +48,8 @@ class OlympeThermal():
         ).wait(_timeout=60).success()
         self.setup_photo_mode()
         self.real_drone()
+        print("\n\n\n\n\n\n\n\n\n\n PHOTO \n\n\n\n\n\n\n\n\n\n\n\n\n")
+        self.drone.disconnect()
 
     def real_drone(self):
         olympe.log.update_config({
@@ -74,30 +76,7 @@ class OlympeThermal():
                 self.drone.media.download_dir,
             )            
         )
-        media_download = self.drone(download_media(media_id, integrity_check=True))
-        resources = media_download.as_completed(expected_count=photo_count, timeout=60)
-        resource_count = 0
-        for resource in resources:
-            logger.info(f"Resource: {resource.resource_id}")
-            if not resource.success():
-                logger.error(f"Failed to download {resource.resource_id}")
-                continue
-            resource_count += 1
-            with open(resource.download_path, "rb") as image_file:
-                image_data = image_file.read()
-                image_xmp_start = image_data.find(b"<x:xmpmeta")
-                image_xmp_end = image_data.find(b"</x:xmpmeta")
-                if image_xmp_start < 0 or image_xmp_end < 0:
-                    logger.error(f"Failed to find XMP photo metadata {resource.resource_id}")
-                    continue
-                image_xmp = ET.fromstring(image_data[image_xmp_start: image_xmp_end + 12])
-                for image_meta in image_xmp[0][0]:
-                    xmp_tag = re.sub(r"{[^}]*}", "", image_meta.tag)
-                    xmp_value = image_meta.text
-                    if xmp_tag in self.XMP_TAGS_OF_INTEREST:
-                        logger.info(f"{resource.resource_id} {xmp_tag} {xmp_value}")
-        logger.info(f"{resource_count} media resource downloaded")
-        assert resource_count == 14, f"resource count == {resource_count} != 14"
+        #assert resource_count == 14, f"resource count == {resource_count} != 14"
 
     def setup_photo_mode(self):
         self.drone(set_mode(mode="standard")) # command message olympe.messages.thermal.set_mode(mode, _timeout=10, _no_expect=False, _float_tol=(1e-07, 1e-09))
@@ -122,6 +101,6 @@ class OlympeThermal():
         ).wait().success()
 
 
-if __name__ == '__main__':
-    drone = OlympeThermal()
-    drone.take_real_photo()
+#if __name__ == '__main__':
+#    drone = OlympeThermal()
+#    drone.take_real_photo()

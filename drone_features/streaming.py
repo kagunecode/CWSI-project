@@ -1,11 +1,10 @@
 import olympe
-from olympe.messages.ardrone3.Piloting import TakeOff, moveBy, Landing, moveTo, NavigateHome
 import threading
 import time
 import queue
 import cv2
 import logging
-from connect import connect_drone
+from .connect import connect_drone
 
 
 class OlympeStreaming(threading.Thread):
@@ -107,18 +106,3 @@ class OlympeStreaming(threading.Thread):
                     # Don't forget to unref the yuv frame. We don't want to
                     # starve the video buffer pool
                     yuv_frame.unref()
-
-
-
-logger = logging.getLogger(__name__)
-
-if __name__ == "__main__":
-    
-    streamer = OlympeStreaming()
-    streamer.start()
-
-    ### Flight commands here ###
-    time.sleep(300)
-    
-    # streamer.stop()
-    # drone.disconnect()
