@@ -68,7 +68,7 @@ openpyxl==3.1.2
 packaging==23.1
 pandas==2.0.3
 paramiko==2.9.3
-parrot-olympe==7.7.0
+parrot-olympe==7.5.0
 parso==0.8.3
 pathspec==0.11.1
 pexpect==4.8.0
