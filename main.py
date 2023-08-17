@@ -20,4 +20,5 @@ while(1):
             thermal.take_real_photo()   
             time.sleep(1)
             print("\n\n\n\n\n\n\n\nReady for Input\n\n\n\n\n\n\n\n")
+            print(thermal.photo)
             live = Rstp()

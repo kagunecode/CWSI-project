@@ -42,6 +42,8 @@ class Thermal():
             "GPSAltitude",            
         )
 
+        self.photo = 0
+
     def take_real_photo(self):
         assert self.drone.media(
             indexing_state(state="indexed")
@@ -61,7 +63,7 @@ class Thermal():
                 }
             }
         })
-        logger = getLogger("photo_example")
+        logger = getLogger("olympe")
         photo_saved = self.drone(photo_progress(result="photo_saved", _policy="wait"))
         self.drone(take_photo(cam_id=1)).wait()
         if not photo_saved.wait(_timeout=30).success():
@@ -76,6 +78,16 @@ class Thermal():
                 self.drone.media.download_dir,
             )            
         )
+        media_download = self.drone(download_media(media_id, integrity_check=True))
+        media_string = str(media_download).split('resource_id=')
+        photo_id = media_string[1].split(")")
+        url = 'http://192.168.42.1:80/data/media/'+photo_id[0]
+        response = requests.get(url)
+        self.photo = photo_id[0]
+        with open('images/drone/'+photo_id[0], "wb") as f:
+            f.write(response.content)
+
+
         #assert resource_count == 14, f"resource count == {resource_count} != 14"
 
     def setup_photo_mode(self):
