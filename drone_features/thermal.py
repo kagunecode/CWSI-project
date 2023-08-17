@@ -2,7 +2,6 @@ import olympe
 import tempfile
 import re
 import xml.etree.ElementTree as ET
-from .connect import connect_drone
 from logging import getLogger
 from olympe.media import (
     indexing_state,
@@ -26,10 +25,10 @@ from olympe.messages.thermal import (
 import shutil
 import requests
 
-class OlympeThermal():
+class Thermal():
 
-    def __init__(self):
-        self.drone = connect_drone()
+    def __init__(self, drone):
+        self.drone = drone
 
         self.XMP_TAGS_OF_INTEREST = (
             "CameraRollDegree",
@@ -50,7 +49,7 @@ class OlympeThermal():
         self.setup_photo_mode()
         self.real_drone()
         self.drone(set_mode(mode="disabled"))
-        self.drone.disconnect()
+        #self.drone.disconnect()
 
     def real_drone(self):
         olympe.log.update_config({

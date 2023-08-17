@@ -1,9 +1,23 @@
-from drone_features.rstp_streaming import OlympeRstp
-from drone_features.thermal import OlympeThermal
-from drone_features.connect import connect_drone
+import time
+import keyboard
+from drone_features.connection import connect, disconnect
+from drone_features.rstp_streaming import Rstp
+from drone_features.thermal import Thermal
 
-thermal = OlympeThermal()
-thermal.take_real_photo()
+drone = connect()
+thermal = Thermal(drone)
+video_stream = True
+live = Rstp()
+while(1):    
+    while(video_stream):
+        live.live_video()
+        if keyboard.is_pressed('q'):
+            video_stream = False
+            disconnect()
+            exit()
 
-live = OlympeRstp()
-live.live_video()
+        if keyboard.is_pressed('p'):
+            thermal.take_real_photo()   
+            time.sleep(1)
+            print("\n\n\n\n\n\n\n\nReady for Input\n\n\n\n\n\n\n\n")
+            live = Rstp()
