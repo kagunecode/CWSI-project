@@ -3,7 +3,7 @@ import keyboard
 from drone_features.connection import connect, disconnect
 from drone_features.rstp_streaming import Rstp
 from drone_features.thermal import Thermal
-from drone_features.trhemal_display import main
+from drone_features.trhemal_display import compute_temperature
 
 drone = connect()
 thermal = Thermal(drone)
@@ -21,5 +21,5 @@ while(1):
             thermal.take_real_photo()   
             time.sleep(1)
             print("\n\n\n\n\n\n\n\nReady for Input\n\n\n\n\n\n\n\n")
-            main(thermal.photo)
+            compute_temperature(thermal.photo)
             live = Rstp()
