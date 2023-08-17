@@ -1,6 +1,7 @@
 import olympe
 import tempfile
 import re
+import time
 import xml.etree.ElementTree as ET
 from logging import getLogger
 from olympe.media import (
@@ -79,6 +80,7 @@ class Thermal():
             )            
         )
         media_download = self.drone(download_media(media_id, integrity_check=True))
+        time.sleep(2)
         media_string = str(media_download).split('resource_id=')
         photo_id = media_string[1].split(")")
         url = 'http://192.168.42.1:80/data/media/'+photo_id[0]
