@@ -75,6 +75,7 @@ pexpect==4.8.0
 pickleshare==0.7.5
 Pillow==9.0.1
 platformdirs==3.8.1
+plotly==5.16.1
 prompt-toolkit==3.0.39
 protobuf==3.19.4
 ptyprocess==0.7.0
@@ -106,6 +107,7 @@ SecretStorage==3.3.1
 six==1.16.0
 stack-data==0.6.2
 systemd-python==234
+tenacity==8.2.3
 tk==0.1.0
 tomli==2.0.1
 traitlets==5.9.0
