@@ -4,12 +4,12 @@ import time
 import queue
 import cv2
 import logging
-from .connect import connect_drone
+from connection import connect
 
 
 class OlympeStreaming(threading.Thread):
     def __init__(self):
-        self.drone = connect_drone()
+        self.drone = connect()
         self.frame_queue = queue.Queue()
         self.flush_queue_lock = threading.Lock()
         self.frame_num = 0 
@@ -56,7 +56,9 @@ class OlympeStreaming(threading.Thread):
     def start_cb(self):
         pass
 
-    def end_cb(self):
+    def end_cb(self):if __name__ == '__main__':
+    drone = OlympeStreaming()
+    drone.start()
         pass
 
     def h264_frame_cb(self, h264_frame):

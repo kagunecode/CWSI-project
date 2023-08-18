@@ -14,7 +14,7 @@ anafi = Command(drone)
 
 while(1):    
     while(video_stream):
-        live.live_video()
+        live.start()
         if keyboard.is_pressed('q'):
             video_stream = False
             disconnect()
