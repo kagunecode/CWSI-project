@@ -2,12 +2,13 @@ from olympe.messages.ardrone3.Piloting import TakeOff, Landing, CancelMoveBy, PC
 from olympe.messages.ardrone3.Sound import StartAlertSound, StopAlertSound
 from olympe.messages.ardrone3.PilotingState import FlyingStateChanged
 from olympe.messages.camera import set_alignment_offsets, reset_alignment_offsets
-from olympe.messages.gimbal import set_offsets, start_offsets_update, stop_offsets_update, calibrate
+from olympe.messages.gimbal import set_offsets, start_offsets_update, stop_offsets_update, calibrate, set_target
 import time
 
 class Command:
     def __init__(self, drone):
         self.drone = drone
+
 
     def takeoff(self):
         self.drone(StartAlertSound())
@@ -42,15 +43,18 @@ class Command:
     def home(self):
         self.drone(NavigateHome(start=-1))
 
-    def camera_up(self):
-        self.drone(start_offsets_update(gimbal_id=0))
-        self.drone(set_offsets(gimbal_id=0, yaw=0, pitch=5, roll=0))
-        self.drone(stop_offsets_update(gimbal_id=0))
-
-    def camera_down(self):
-        self.drone(start_offsets_update(gimbal_id=0))
-        self.drone(set_offsets(gimbal_id=0, yaw=-10, pitch=-10, roll=-10))
-        self.drone(stop_offsets_update(gimbal_id=0))
+    def camera_angle(self, currentAngle):
+        self.drone(set_target(
+        gimbal_id=0,
+        control_mode="position",
+        yaw_frame_of_reference="none", # Yaw is not supported in the Anafi Thermal, you could change this if your drone supports it.
+        yaw=0,
+        pitch_frame_of_reference="absolute",
+        pitch=currentAngle,
+        roll_frame_of_reference="none", # Same with roll, some drones might support it so change it if you need to.
+        roll=0,
+        ))
+        return currentAngle
 
     def camera_calibrate(self):
         self.drone(calibrate(gimbal_id=0))

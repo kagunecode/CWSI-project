@@ -56,9 +56,7 @@ class OlympeStreaming(threading.Thread):
     def start_cb(self):
         pass
 
-    def end_cb(self):if __name__ == '__main__':
-    drone = OlympeStreaming()
-    drone.start()
+    def end_cb(self):
         pass
 
     def h264_frame_cb(self, h264_frame):

@@ -11,6 +11,8 @@ thermal = Thermal(drone)
 video_stream = True
 live = Rstp()
 anafi = Command(drone)
+camAngle = 0
+anafi.camera_angle(currentAngle=0)
 
 while(1):    
     while(video_stream):
@@ -58,10 +60,26 @@ while(1):
             anafi.home()
 
         if keyboard.is_pressed('i'):
-            anafi.camera_up()
+            if camAngle >= -90 and camAngle <=90:
+                camAngle = camAngle + 1
+                anafi.camera_angle(currentAngle=camAngle)
+            elif camAngle > 90:
+                camAngle = 90
+                print('\n\n\n\n\nMAX ANGLE REAHCED\n\n\n\n\n')
+            else:
+                camAngle = -90
+                print('\n\n\n\n\nMAX ANGLE REAHCED\n\n\n\n\n')
 
         if keyboard.is_pressed('k'):
-            anafi.camera_down()
+            if camAngle >= -90 and camAngle <=90:
+                camAngle = camAngle - 1
+                anafi.camera_angle(currentAngle=camAngle)
+            elif camAngle > 90:
+                camAngle = 90
+                print('\n\n\n\n\nMIN ANGLE REAHCED\n\n\n\n\n')
+            else:
+                camAngle = -90
+                print('\n\n\n\n\nMIN ANGLE REAHCED\n\n\n\n\n')
 
         if keyboard.is_pressed('c'):
             anafi.camera_calibrate()
