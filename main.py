@@ -41,6 +41,12 @@ while(1):
         if keyboard.is_pressed('a'):
             anafi.left()
 
+        if keyboard.is_pressed('up'):
+            anafi.up()
+
+        if keyboard.is_pressed('down'):
+            anafi.down()
+
         if keyboard.is_pressed('t'):
             anafi.takeoff()
 

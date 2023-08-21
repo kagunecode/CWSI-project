@@ -37,6 +37,12 @@ class Command:
     def rotate_right(self):
         self.drone(PCMD(flag=1, roll=0, pitch=0, yaw=100, gaz=0, timestampAndSeqNum=1))
 
+    def up(self):
+        self.drone(PCMD(flag=1, roll=0, pitch=0, yaw=0, gaz=10, timestampAndSeqNum=1))        
+
+    def down(self):
+        self.drone(PCMD(flag=1, roll=0, pitch=0, yaw=0, gaz=-10, timestampAndSeqNum=1))  
+
     def stop(self):
         self.drone(CancelMoveBy())
 
