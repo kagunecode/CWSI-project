@@ -16,7 +16,6 @@ Also, the venv used needs a cleanup since there are a lot of packages that are n
 has to be changed for future versions of the program.
 
 # CONTROLS
-<<<<<<< HEAD
 As of the latest stable version (**0.5.0**) the controls are:<br /><br />
 **W - A - S - D**: Control the drone directions (up, left, down and right).<br />
 **ARROWS**: Left and right will rotate the drone to that direction. Up and down will make the drone go higher or lower.<br />
@@ -27,24 +26,3 @@ As of the latest stable version (**0.5.0**) the controls are:<br /><br />
 **I - K**: Control the camera angle. I goes up and K goes down.<br />
 **C**: Calibrate camera. If you notice any errors on the camera angle run this request and it should get fixed.<br />
 **Q**: Quits the program. Take in count this wont make the drone come back nor land. Quit the program when you're done.<br />
-=======
-As of the latest stable version (**0.5.0**) the controls are:
-
-**W - A - S - D**: Control the drone directions (up, left, down and right).
-
-**ARROWS**: Left and right will rotate the drone to that direction. Up and down will make the drone go higher or lower.
-
-**H**: The drone will try to come back to the landing point (home). This might not work if the drone loses connection or if it has no battery left.
-
-**T**: Takeoff. The Drone will make a sound to warn about the takeoff. You can cancel it by sending a landing request.
-
-**L**: Landing. Please make sure there's enough space for the drone to land. Also, lower the drone as much as you can before sending a land request.
-
-**P**: Take thermal photo. The process takes a couple seconds and you get the image saved in the images/drone directory. If you don't have this directory the program will likely crash.
-
-**I - K**: Control the camera angle. I goes up and K goes down.
-
-**C**: Calibrate camera. If you notice any errors on the camera angle run this request and it should get fixed.
-
-**Q**: Quits the program. Take in count this wont make the drone come back nor land. Quit the program when you're done.
->>>>>>> 4be4c8f02d9d55238527e54687eba9d38e1ea1ed
