@@ -23,7 +23,7 @@ while(1):
             exit()
 
         if keyboard.is_pressed('p'):
-            thermal.take_real_photo()   
+            thermal.take_real_photo(photo_type='thermal')   
             time.sleep(1)
             print("\n\n\n\n\n\n\n\nReady for Input\n\n\n\n\n\n\n\n")
             compute_temperature(thermal.photo)
@@ -53,8 +53,11 @@ while(1):
         if keyboard.is_pressed('l'):
             anafi.land()
 
-        if keyboard.is_pressed('space'):
-            anafi.stop()
+        if keyboard.is_pressed('n'):
+            thermal.take_real_photo(photo_type='normal')   
+            time.sleep(1)
+            print("\n\n\n\n\n\n\n\nReady for Input\n\n\n\n\n\n\n\n")
+            live = Rstp()
 
         if keyboard.is_pressed('left'):
             anafi.rotate_left()
@@ -90,3 +93,7 @@ while(1):
         if keyboard.is_pressed('c'):
             anafi.camera_calibrate()
             print('\n\n\n\n\n\n\n\n\n\nCAMERA CALIBRATED\n\n\n\n\n\n\n\n\n\n\n\n')
+
+        if keyboard.is_pressed('e'):
+            anafi.drone_calibrate()
+            print('\n\n\n\n\n\n\n\n\n\nDRONE CALIBRATED\n\n\n\n\n\n\n\n\n\n\n\n')

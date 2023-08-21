@@ -45,13 +45,18 @@ class Thermal():
 
         self.photo = 0
 
-    def take_real_photo(self):
+    def take_real_photo(self, photo_type):
         assert self.drone.media(
             indexing_state(state="indexed")
         ).wait(_timeout=60).success()
-        self.setup_photo_mode()
-        self.real_drone()
-        self.drone(set_mode(mode="disabled"))
+        if photo_type == 'thermal':
+            self.setup_thermal_mode()
+            self.real_drone()
+        else:
+            self.setup_normal_mode()
+            self.real_drone()
+
+    
         #self.drone.disconnect()
 
     def real_drone(self):
@@ -88,11 +93,12 @@ class Thermal():
         self.photo = photo_id[0]
         with open('images/drone/'+photo_id[0], "wb") as f:
             f.write(response.content)
+        self.drone(set_mode(mode="disabled"))
 
 
         #assert resource_count == 14, f"resource count == {resource_count} != 14"
 
-    def setup_photo_mode(self):
+    def setup_thermal_mode(self):
         self.drone(set_mode(mode="standard")) # command message olympe.messages.thermal.set_mode(mode, _timeout=10, _no_expect=False, _float_tol=(1e-07, 1e-09))
         # Thermal modes standard, disabled, blended. Should disable camera? cam_id 1 apparently is for video only.
         # No Thermal support for streaming video.
@@ -113,6 +119,24 @@ class Thermal():
                 capture_interval=0.0,
             )
         ).wait().success()
+
+    def setup_normal_mode(self):
+        self.drone(set_mode(mode="standard"))
+        self.drone(set_rendering(mode="visible", blending_rate=0))
+        self.drone(set_camera_mode(cam_id=1, value="photo")).wait()
+        self.drone(
+            set_photo_mode(
+                cam_id=1,
+                mode="single",
+                format="rectilinear",
+                file_format="dng_jpeg",
+                burst="burst_14_over_1s",
+                bracketing="preset_1ev",
+                capture_interval=0.0,
+            )
+        ).wait().success()
+
+
 
 
 #if __name__ == '__main__':
