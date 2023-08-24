@@ -4,6 +4,7 @@ from drone_features.camera import Camera
 from drone_features.thermal_display import plot_temperature
 from drone_features.control import Command
 from drone_features.connection import disconnect
+from  drone_features.status import Status
 import multiprocessing as mp
 import time
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -22,44 +23,56 @@ class GUI:
         self.camAngle = 0
         self.camera = Camera(self.drone)
         self.live = Rstp()
+        self.state = Status(self.drone)
 
-        self.landing_button = tk.Button(self.root, text="Land", command=self.landing)
-        self.takeoff_button = tk.Button(self.root, text="Take Off", command=self.takeoff)
-        self.forward_button = tk.Button(self.root, text="W", command=self.forward)
-        self.backward_button = tk.Button(self.root, text="S", command=self.backward)
-        self.left_button = tk.Button(self.root, text="A", command=self.left)
-        self.right_button = tk.Button(self.root, text="D", command=self.right)
-        self.camera_up_button = tk.Button(self.root, text="Cam Up", command=self.camera_up)
-        self.camera_down_button = tk.Button(self.root, text="Cam Down", command=self.camera_down)
-        self.photo_button = tk.Button(self.root, text="Photo", command=self.take_photo)
-        self.thermal_photo_button = tk.Button(self.root, text="Thermal Photo", command=self.take_thermal_photo)
-        self.drone_up_button = tk.Button(self.root, text="Elevate", command=self.drone_up)
-        self.drone_down_button = tk.Button(self.root, text="Lower", command=self.drone_down)
-        self.rotate_left_button = tk.Button(self.root, text="Rotate Left", command=self.rotate_left)
-        self.rotate_right_button = tk.Button(self.root, text="Rotate Right", command=self.rotate_right)
-        self.quit_button = tk.Button(self.root, text="Quit", command=self.quit)
-        self.home_button = tk.Button(self.root, text="Return Home", command=self.home)
+        self.movement_frame = tk.Frame(self.root)
+        self.movement_frame.grid(row=2, column=0, columnspan=5)
+        self.elevation_frame = tk.Frame(self.root)
+        self.elevation_frame.grid(row=2, column=5, columnspan=5)
+        self.command_bar = tk.Frame(self.root)
+        self.command_bar.grid(row=4, column=0, columnspan=10)
+        self.empty_row = tk.Frame(self.root, height=10)
+        self.empty_row.grid(row=3, column=0)
+        self.status_bar = tk.Frame(self.root)
+        self.status_bar.grid(row=5, column=0, columnspan=10)
 
-
+        self.landing_button = tk.Button(self.command_bar, text="Land", command=self.landing)
+        self.takeoff_button = tk.Button(self.command_bar, text="Take Off", command=self.takeoff)
+        self.forward_button = tk.Button(self.movement_frame, text="Forward", command=self.forward)
+        self.backward_button = tk.Button(self.movement_frame, text="Backward", command=self.backward)
+        self.left_button = tk.Button(self.movement_frame, text="Left", command=self.left)
+        self.right_button = tk.Button(self.movement_frame, text="Right", command=self.right)
+        self.camera_up_button = tk.Button(self.command_bar, text="Cam Up", command=self.camera_up)
+        self.camera_down_button = tk.Button(self.command_bar, text="Cam Down", command=self.camera_down)
+        self.photo_button = tk.Button(self.command_bar, text="Photo", command=self.take_photo)
+        self.thermal_photo_button = tk.Button(self.command_bar, text="Thermal Photo", command=self.take_thermal_photo)
+        self.drone_up_button = tk.Button(self.elevation_frame, text="Elevate", command=self.drone_up)
+        self.drone_down_button = tk.Button(self.elevation_frame, text="Lower", command=self.drone_down)
+        self.rotate_left_button = tk.Button(self.elevation_frame, text="Rotate Left", command=self.rotate_left)
+        self.rotate_right_button = tk.Button(self.elevation_frame, text="Rotate Right", command=self.rotate_right)
+        self.quit_button = tk.Button(self.command_bar, text="Quit", command=self.quit)
+        self.home_button = tk.Button(self.command_bar, text="Return Home", command=self.home, bg="red", fg="white")
         self.show_hide_button = tk.Button(self.root, text="Show/Hide Canvas", command=self.toggle_canvas)
-        self.show_hide_button.grid(row=8, column=0, columnspan=8)
-
+        self.battery_label = tk.Label(self.status_bar, text=self.state.battery())
+        
+        self.show_hide_button.grid(row=1, column=0, columnspan=10)
         self.forward_button.grid(row=1, column=1)
         self.backward_button.grid(row=3, column=1)
         self.left_button.grid(row=2, column=0)
         self.right_button.grid(row=2, column=2)
-        self.camera_up_button.grid(row=7, column=1)
-        self.camera_down_button.grid(row=8, column=1)
-        self.photo_button.grid(row=5, column=1)
-        self.thermal_photo_button.grid(row=5, column=0)
-        self.takeoff_button.grid(row=2, column=5, columnspan=2)
-        self.landing_button.grid(row=3, column=5, columnspan=2)
+        self.camera_up_button.grid(row=0, column=0)
+        self.camera_down_button.grid(row=0, column=1)
+        self.photo_button.grid(row=0, column=2)
+        self.thermal_photo_button.grid(row=0, column=3)
+        self.takeoff_button.grid(row=0, column=4)
+        self.landing_button.grid(row=0, column=6)
         self.drone_up_button.grid(row=1, column=6)
         self.drone_down_button.grid(row=3, column=6)
         self.rotate_left_button.grid(row=2, column=5)
         self.rotate_right_button.grid(row=2, column=7)
-        self.quit_button.grid(row=8, column=10)
-        self.home_button.grid(row=8, column=9)
+        self.quit_button.grid(row=0, column=8)
+        self.home_button.grid(row=0, column=7)
+        self.battery_label.grid(row=0, column=0)
 
         self.canvas_visible = True
         self.figure, self.ax = plt.subplots(figsize=(10, 6))
@@ -112,10 +125,21 @@ class GUI:
         self.root.bind("<KeyRelease-q>", lambda event: self.handle_key_release(event, self.quit_button))
 
         self.root.bind("<KeyPress-h>", lambda event: self.handle_key_press(event, self.home_button, self.home))
-        self.root.bind("<KeyRelease-h>", lambda event: self.handle_key_release(event, self.home_button))        
+        self.root.bind("<KeyRelease-h>", lambda event: self.handle_key_release(event, self.home_button)) 
+
+        self.root.bind("<KeyPress-space>", lambda event: self.handle_key_press(event, self.show_hide_button, self.toggle_canvas))
+        self.root.bind("<KeyRelease-space>", lambda event: self.handle_key_release(event, self.show_hide_button)) 
+        
+
+        for button in [self.forward_button, self.backward_button, self.left_button, self.right_button,
+                       self.camera_up_button, self.camera_down_button, self.photo_button, self.thermal_photo_button,
+                       self.drone_up_button, self.drone_down_button, self.rotate_left_button, self.rotate_right_button,
+                       self.quit_button, self.home_button, self.takeoff_button, self.landing_button]:
+            button.configure(width=10, height=2)            
  
     def forward(self):
         self.anafi.forward()
+        print(self.state.battery())
 
     def backward(self):
         self.anafi.backward()
@@ -187,9 +211,9 @@ class GUI:
         plot_temperature(self.camera.photo, self.figure, self.ax, self.canvas)
         self.live = Rstp()        
 
-    def handle_key_press(self, event, button, action_function):
+    def handle_key_press(self, event, button, command):
         button.config(relief=tk.SUNKEN)
-        action_function()
+        command()
 
     def handle_key_release(self, event, button):
         button.config(relief=tk.RAISED)
@@ -201,6 +225,11 @@ class GUI:
         self.live_video()
         self.root.after(1, self.live_video_loop)
 
+    def battery_level(self):
+        self.root.after(1, self.battery_level)
+        print(self.state.cam_angle())
+        self.battery_label.config(text="Battery: "+str(self.state.battery())+"%")
+
     def home(self):
         self.anafi.home()
 
@@ -210,4 +239,5 @@ class GUI:
 
     def run(self):
         self.live_video_loop()
+        self.battery_level()
         self.root.mainloop()
