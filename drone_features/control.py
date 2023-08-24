@@ -1,9 +1,7 @@
 from olympe.messages.ardrone3.Piloting import TakeOff, Landing, CancelMoveBy, PCMD, NavigateHome
 from olympe.messages.ardrone3.Sound import StartAlertSound, StopAlertSound
-from olympe.messages.ardrone3.PilotingState import FlyingStateChanged
-from olympe.messages.camera import set_alignment_offsets, reset_alignment_offsets
-from olympe.messages.gimbal import set_offsets, start_offsets_update, stop_offsets_update, calibrate, set_target
-from olympe.messages.common.Calibration import PitotCalibration, MagnetoCalibration
+from olympe.messages.gimbal import calibrate, set_target
+from olympe.messages.common.Calibration import MagnetoCalibration
 import time
 
 class Command:

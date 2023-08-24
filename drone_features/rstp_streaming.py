@@ -1,6 +1,5 @@
 import cv2 as cv
 import os
-import time
 
 class Rstp():
     def __init__(self):
