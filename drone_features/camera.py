@@ -36,8 +36,6 @@ class Camera():
             "CameraPitchDegree",
             "CameraYawDegree",
             "CaptureTsUs",
-            # NOTE: GPS metadata is only present if the drone has a GPS fix
-            # (i.e. they won't be present indoor).
             "GPSLatitude",
             "GPSLongitude",
             "GPSAltitude",            
@@ -92,9 +90,6 @@ class Camera():
         with open('images/drone/'+photo_id[0], "wb") as f:
             f.write(response.content)
         self.drone(set_mode(mode="disabled"))
-
-
-        #assert resource_count == 14, f"resource count == {resource_count} != 14"
 
     def setup_thermal_mode(self):
         self.drone(set_mode(mode="standard")) # command message olympe.messages.thermal.set_mode(mode, _timeout=10, _no_expect=False, _float_tol=(1e-07, 1e-09))

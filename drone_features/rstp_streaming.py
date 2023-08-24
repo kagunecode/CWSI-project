@@ -12,4 +12,3 @@ class Rstp():
         ret, frame = self.vcap.read()
         cv.imshow('VIDEO', frame)
         cv.waitKey(1)
-
