@@ -1,7 +1,7 @@
-#CWSI-project
+# CWSI-project
 Project related to the CWSI calculation
 
-#UPDATES
+# UPDATES
 Using Olympe 7.5.0 since Oylmpe 7.7.0 causes constant connection retries. This has been fixed on the current version of this program. Requirements have been updated to use the functional Olympe version. Multiprocessing is being used as of now in this program since matplotlib blocks the program from executing any following code. For now, it's the best solution as it has no impact on the performance of the live stream video at all. Also, the venv used needs a cleanup since there are a lot of packages that are not being used at all.
 
 **0.1.0**: Added camera capabilities to take photo. Basic functions are still on progress.<br />
@@ -16,11 +16,11 @@ has to be changed for future versions of the program. <br />
 Lastly, the return home function has been tested and it's working, so be really carerful when using this.<br />
 **0.6.1**: A functional GUI has been added. It will show the temperature plot on the canvas display, which can be hidden with a button or by pressing the **space** key. You can click in the GUI buttons to control the drone or you can use the keyboard keys stated on the [controls](#CONTROLS). You must have the controls window focused in order for this to work, which is more convenient. Some functions are not available on the GUI program. Please, run **gui_main.py** in order to control the drone on GUI mode.
 
-#DISCLAIMER
+# DISCLAIMER
 The return home function is working properly and as of version 0.5.1 it has no confirmation measurements, so as soon as you press **H** the return home function will execute.<br />
 When the return home function is run the drone will elevate as high as it can and will try to return to the takeoff location at maximum speed. <br /> **USE IT ONLY WHEN NEEDED, IF USED IMPROPERLY YOUR DRONE COULD RUN A VERY HIGH RISK OF CRASHING OR OTHER DANGEROUS SITUATIONS**.
 
-#CONTROLS
+# CONTROLS
 As of the latest stable version (**0.6.1**) the controls are:<br /><br />
 **W - A - S - D**: Control the drone directions (up, left, down and right).<br />
 **ARROWS**: Left and right will rotate the drone to that direction. Up and down will make the drone go higher or lower.<br />
@@ -30,10 +30,5 @@ As of the latest stable version (**0.6.1**) the controls are:<br /><br />
 **L**: Landing. Please make sure there's enough space for the drone to land. Also, lower the drone as much as you can before sending a land request.<br />
 **P**: Take thermal photo. The process takes a couple seconds and you get the image saved in the images/drone directory. If you don't have this directory the program will likely crash.<br />
 **I - K**: Control the camera angle. I goes up and K goes down.<br />
-<<<<<<< HEAD
-**C**: Calibrate camera. If you notice any errors on the camera angle run this request and it should get fixed.<br />
+**C (NON GUI ONLY)**: Calibrate camera. If you notice any errors on the camera angle run this request and it should get fixed.<br />
 **Q**: Quits the program. Take in count this wont make the drone come back nor land. Quit the program when you're done.<br />
-=======
-**C (NON GUI MODE ONLY)**: Calibrate camera. If you notice any errors on the camera angle run this request and it should get fixed.<br />
-**Q**: Quits the program. Take in count this wont make the drone come back nor land. Quit the program when you're done.<br />
->>>>>>> develop
