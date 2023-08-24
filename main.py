@@ -1,5 +1,6 @@
 import time
 import keyboard
+from drone_features.connection import connect, disconnect
 from drone_features.rstp_streaming import Rstp
 from drone_features.camera import Camera
 from drone_features.thermal_display import compute_temperature

@@ -2,6 +2,9 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
+import matplotlib
+matplotlib.use("Agg")
+import mplcursors
 import os
 import multiprocessing as mp
 
@@ -33,8 +36,14 @@ def plot_temperature(photo):
     plt.title("Thermal Image with Temperature Mapping")
     plt.xlabel("X")
     plt.ylabel("Y")
-    plt.show()
+    mplcursors.cursor(hover=True).connect(
+    "add", lambda sel: sel.annotation.set_text(f"Temperature: {temperature_image_c[sel.target.index]:.2f} °C"))
+
+    plt.savefig("temperature_plot.png", bbox_inches="tight")
+    plt.close()
+
 
 def compute_temperature(photo):
     p = mp.Process(target=plot_temperature, args=(photo,))
     p.start()
+    p.join()
