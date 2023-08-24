@@ -3,6 +3,7 @@ from drone_features.rstp_streaming import Rstp
 from drone_features.camera import Camera
 from drone_features.thermal_display import plot_temperature
 from drone_features.control import Command
+from drone_features.connection import disconnect
 import multiprocessing as mp
 import time
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -32,20 +33,33 @@ class GUI:
         self.camera_down_button = tk.Button(self.root, text="Cam Down", command=self.camera_down)
         self.photo_button = tk.Button(self.root, text="Photo", command=self.take_photo)
         self.thermal_photo_button = tk.Button(self.root, text="Thermal Photo", command=self.take_thermal_photo)
+        self.drone_up_button = tk.Button(self.root, text="Elevate", command=self.drone_up)
+        self.drone_down_button = tk.Button(self.root, text="Lower", command=self.drone_down)
+        self.rotate_left_button = tk.Button(self.root, text="Rotate Left", command=self.rotate_left)
+        self.rotate_right_button = tk.Button(self.root, text="Rotate Right", command=self.rotate_right)
+        self.quit_button = tk.Button(self.root, text="Quit", command=self.quit)
+        self.home_button = tk.Button(self.root, text="Return Home", command=self.home)
+
 
         self.show_hide_button = tk.Button(self.root, text="Show/Hide Canvas", command=self.toggle_canvas)
-        self.show_hide_button.grid(row=8, column=0, columnspan=10)
+        self.show_hide_button.grid(row=8, column=0, columnspan=8)
 
-        self.forward_button.grid(row=0, column=1)
-        self.backward_button.grid(row=2, column=1)
-        self.left_button.grid(row=1, column=0)
-        self.right_button.grid(row=1, column=2)
-        self.camera_up_button.grid(row=6, column=1)
-        self.camera_down_button.grid(row=7, column=1)
-        self.photo_button.grid(row=4, column=1)
-        self.thermal_photo_button.grid(row=4, column=0)
-        self.takeoff_button.grid(row=1, column=5, columnspan=2)
-        self.landing_button.grid(row=2, column=5, columnspan=2)
+        self.forward_button.grid(row=1, column=1)
+        self.backward_button.grid(row=3, column=1)
+        self.left_button.grid(row=2, column=0)
+        self.right_button.grid(row=2, column=2)
+        self.camera_up_button.grid(row=7, column=1)
+        self.camera_down_button.grid(row=8, column=1)
+        self.photo_button.grid(row=5, column=1)
+        self.thermal_photo_button.grid(row=5, column=0)
+        self.takeoff_button.grid(row=2, column=5, columnspan=2)
+        self.landing_button.grid(row=3, column=5, columnspan=2)
+        self.drone_up_button.grid(row=1, column=6)
+        self.drone_down_button.grid(row=3, column=6)
+        self.rotate_left_button.grid(row=2, column=5)
+        self.rotate_right_button.grid(row=2, column=7)
+        self.quit_button.grid(row=8, column=10)
+        self.home_button.grid(row=8, column=9)
 
         self.canvas_visible = True
         self.figure, self.ax = plt.subplots(figsize=(10, 6))
@@ -81,6 +95,24 @@ class GUI:
 
         self.root.bind("<KeyPress-l>", lambda event: self.handle_key_press(event, self.landing_button, self.landing))
         self.root.bind("<KeyRelease-l>", lambda event: self.handle_key_release(event, self.landing_button))
+
+        self.root.bind("<KeyPress-Up>", lambda event: self.handle_key_press(event, self.drone_up_button, self.drone_up))
+        self.root.bind("<KeyRelease-Up>", lambda event: self.handle_key_release(event, self.drone_up_button))
+
+        self.root.bind("<KeyPress-Down>", lambda event: self.handle_key_press(event, self.drone_down_button, self.drone_down))
+        self.root.bind("<KeyRelease-Down>", lambda event: self.handle_key_release(event, self.drone_down_button))
+
+        self.root.bind("<KeyPress-Left>", lambda event: self.handle_key_press(event, self.rotate_left_button, self.rotate_left))
+        self.root.bind("<KeyRelease-Left>", lambda event: self.handle_key_release(event, self.rotate_left_button))
+
+        self.root.bind("<KeyPress-Right>", lambda event: self.handle_key_press(event, self.rotate_right_button, self.rotate_right))
+        self.root.bind("<KeyRelease-Right>", lambda event: self.handle_key_release(event, self.rotate_right_button))
+                
+        self.root.bind("<KeyPress-q>", lambda event: self.handle_key_press(event, self.quit_button, self.quit))
+        self.root.bind("<KeyRelease-q>", lambda event: self.handle_key_release(event, self.quit_button))
+
+        self.root.bind("<KeyPress-h>", lambda event: self.handle_key_press(event, self.home_button, self.home))
+        self.root.bind("<KeyRelease-h>", lambda event: self.handle_key_release(event, self.home_button))        
  
     def forward(self):
         self.anafi.forward()
@@ -99,6 +131,18 @@ class GUI:
 
     def landing(self):
         self.anafi.land()
+
+    def drone_up(self):
+        self.anafi.up()
+
+    def drone_down(self):
+        self.anafi.down()
+
+    def rotate_left(self):
+        self.anafi.rotate_left()
+
+    def rotate_right(self):
+        self.anafi.rotate_right()
 
     def toggle_canvas(self):
         if self.canvas_visible:
@@ -156,6 +200,13 @@ class GUI:
     def live_video_loop(self):
         self.live_video()
         self.root.after(1, self.live_video_loop)
+
+    def home(self):
+        self.anafi.home()
+
+    def quit(self):
+        disconnect()
+        exit()
 
     def run(self):
         self.live_video_loop()
