@@ -5,6 +5,12 @@ from drone_features.thermal_display import compute_temperature
 from drone_features.control import Command
 import multiprocessing as mp
 import time
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+import mplcursors
+import numpy as np
+import cv2
 
 class GUI:
     def __init__(self, drone):
@@ -27,6 +33,9 @@ class GUI:
         self.photo_button = tk.Button(self.root, text="Photo", command=self.take_photo)
         self.thermal_photo_button = tk.Button(self.root, text="Thermal Photo", command=self.take_thermal_photo)
 
+        self.show_hide_button = tk.Button(self.root, text="Show/Hide Canvas", command=self.toggle_canvas)
+        self.show_hide_button.grid(row=8, column=0, columnspan=10)
+
         self.forward_button.grid(row=0, column=1)
         self.backward_button.grid(row=2, column=1)
         self.left_button.grid(row=1, column=0)
@@ -38,6 +47,10 @@ class GUI:
         self.takeoff_button.grid(row=1, column=5, columnspan=2)
         self.landing_button.grid(row=2, column=5, columnspan=2)
 
+        self.canvas_visible = True
+        self.figure, self.ax = plt.subplots(figsize=(10, 6))
+        self.canvas = FigureCanvasTkAgg(self.figure, master=self.root)
+        self.canvas.get_tk_widget().grid(row=0, column=0, columnspan=10)
 
         self.root.bind("<KeyPress-w>", lambda event: self.handle_key_press(event, self.forward_button, self.forward))
         self.root.bind("<KeyRelease-w>", lambda event: self.handle_key_release(event, self.forward_button))
@@ -87,6 +100,33 @@ class GUI:
     def landing(self):
         self.anafi.land()
 
+    def toggle_canvas(self):
+        if self.canvas_visible:
+            self.canvas.get_tk_widget().grid_forget()
+            self.canvas_visible = False
+        else:
+            self.canvas.get_tk_widget().grid(row=0, column=0, columnspan=10)
+            self.canvas_visible = True
+
+
+    def plot_temperature(self, photo):
+        image_path = "images/drone/" + photo
+
+        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+        min_temp_k = 274
+        max_temp_k = 314
+        inferno_cmap = LinearSegmentedColormap.from_list('inferno', plt.cm.inferno(np.linspace(0, 1, 256)))
+        temperature_image_c = self.convert_to_temperature(image, min_temp_k, max_temp_k)
+
+        self.figure.clear()
+        self.ax = self.figure.add_subplot(111)
+        im = self.ax.imshow(temperature_image_c, cmap=inferno_cmap, aspect='auto')
+        plt.colorbar(im, ax=self.ax, label='Temperature (°C)')
+        plt.title("Thermal Image with Temperature Mapping")
+        mplcursors.cursor(hover=True).connect(
+            "add", lambda sel: sel.annotation.set_text(f"Temperature: {temperature_image_c[sel.target.index]:.2f} °C"))
+        self.canvas.draw()
+
     def camera_up(self):
         if self.camAngle >= -90 and self.camAngle <=90:
             self.camAngle = self.camAngle + 1
@@ -106,7 +146,7 @@ class GUI:
             self.camAngle = 90
             print('\n\n\n\n\nMIN ANGLE REAHCED\n\n\n\n\n')
         else:
-            camAngle = -90
+            self.camAngle = -90
             print('\n\n\n\n\nMIN ANGLE REAHCED\n\n\n\n\n')
 
     def take_photo(self):
@@ -119,8 +159,11 @@ class GUI:
         self.camera.take_real_photo(photo_type='thermal')
         print("\n\n\n\n\n\n\n\nReady for Input\n\n\n\n\n\n\n\n")
         time.sleep(1)
-        compute_temperature(self.camera.photo)
+        self.plot_temperature(self.camera.photo)
         self.live = Rstp()
+
+    def convert_to_temperature(self, pixel_value, min_temp_k, max_temp_k):
+        return ((pixel_value / 255) * (max_temp_k - min_temp_k) + min_temp_k) - 273.15
         
 
     def handle_key_press(self, event, button, action_function):
