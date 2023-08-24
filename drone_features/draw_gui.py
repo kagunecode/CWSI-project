@@ -1,7 +1,7 @@
 import tkinter as tk
 from drone_features.rstp_streaming import Rstp
 from drone_features.camera import Camera
-from drone_features.thermal_display import compute_temperature
+from drone_features.thermal_display import plot_temperature
 from drone_features.control import Command
 import multiprocessing as mp
 import time
@@ -108,25 +108,6 @@ class GUI:
             self.canvas.get_tk_widget().grid(row=0, column=0, columnspan=10)
             self.canvas_visible = True
 
-
-    def plot_temperature(self, photo):
-        image_path = "images/drone/" + photo
-
-        image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-        min_temp_k = 274
-        max_temp_k = 314
-        inferno_cmap = LinearSegmentedColormap.from_list('inferno', plt.cm.inferno(np.linspace(0, 1, 256)))
-        temperature_image_c = self.convert_to_temperature(image, min_temp_k, max_temp_k)
-
-        self.figure.clear()
-        self.ax = self.figure.add_subplot(111)
-        im = self.ax.imshow(temperature_image_c, cmap=inferno_cmap, aspect='auto')
-        plt.colorbar(im, ax=self.ax, label='Temperature (°C)')
-        plt.title("Thermal Image with Temperature Mapping")
-        mplcursors.cursor(hover=True).connect(
-            "add", lambda sel: sel.annotation.set_text(f"Temperature: {temperature_image_c[sel.target.index]:.2f} °C"))
-        self.canvas.draw()
-
     def camera_up(self):
         if self.camAngle >= -90 and self.camAngle <=90:
             self.camAngle = self.camAngle + 1
@@ -159,12 +140,8 @@ class GUI:
         self.camera.take_real_photo(photo_type='thermal')
         print("\n\n\n\n\n\n\n\nReady for Input\n\n\n\n\n\n\n\n")
         time.sleep(1)
-        self.plot_temperature(self.camera.photo)
-        self.live = Rstp()
-
-    def convert_to_temperature(self, pixel_value, min_temp_k, max_temp_k):
-        return ((pixel_value / 255) * (max_temp_k - min_temp_k) + min_temp_k) - 273.15
-        
+        plot_temperature(self.camera.photo, self.figure, self.ax, self.canvas)
+        self.live = Rstp()        
 
     def handle_key_press(self, event, button, action_function):
         button.config(relief=tk.SUNKEN)
