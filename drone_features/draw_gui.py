@@ -1,7 +1,7 @@
 import tkinter as tk
 from drone_features.rstp_streaming import Rstp
 from drone_features.camera import Camera
-from drone_features.thermal_display import plot_temperature
+from drone_features.thermal_display import plot_temperature_canvas
 from drone_features.control import Command
 from drone_features.connection import disconnect
 from  drone_features.status import Status
@@ -208,7 +208,7 @@ class GUI:
         self.camera.take_real_photo(photo_type='thermal')
         print("\n\n\n\n\n\n\n\nReady for Input\n\n\n\n\n\n\n\n")
         time.sleep(1)
-        plot_temperature(self.camera.photo, self.figure, self.ax, self.canvas)
+        plot_temperature_canvas(self.camera.photo, self.figure, self.ax, self.canvas)
         self.live = Rstp()        
 
     def handle_key_press(self, event, button, command):
@@ -227,7 +227,6 @@ class GUI:
 
     def battery_level(self):
         self.root.after(1, self.battery_level)
-        print(self.state.cam_angle())
         self.battery_label.config(text="Battery: "+str(self.state.battery())+"%")
 
     def home(self):
